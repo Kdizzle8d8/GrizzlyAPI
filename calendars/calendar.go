@@ -3,6 +3,7 @@ package calendars
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -25,6 +26,16 @@ type Calendar struct {
 
 // This method is defined on the Calendar struct, so it can be called on any Calendar object.
 func (c *Calendar) ToJSON() ([]byte, error) {
+	sort.Slice(c.Months, func(i, j int) bool {
+		return c.Months[i].Number < c.Months[j].Number
+	})
+
+	for i := range c.Months {
+		sort.Slice(c.Months[i].Days, func(j, k int) bool {
+			return c.Months[i].Days[j].Number < c.Months[i].Days[k].Number
+		})
+	}
+
 	return json.Marshal(c)
 }
 
