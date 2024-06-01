@@ -1,4 +1,4 @@
-package utils
+package calendars
 
 import (
 	"encoding/json"
@@ -9,20 +9,21 @@ import (
 
 // Define format of JSON data
 type Month struct {
-	Name   string
-	Number int
-	Days   []Day
+	Name   string `json:"name"`
+	Number int    `json:"number"`
+	Days   []Day  `json:"days"`
 }
 
 type Day struct {
-	Number int
-	Type   string
+	Number int    `json:"number"`
+	Type   string `json:"type"`
 }
 
 type Calendar struct {
-	Months []Month
+	Months []Month `json:"months"`
 }
 
+// This method is defined on the Calendar struct, so it can be called on any Calendar object.
 func (c *Calendar) ToJSON() ([]byte, error) {
 	return json.Marshal(c)
 }
@@ -43,6 +44,18 @@ var monthNumbers = map[string]int{
 	"october":   10,
 	"november":  11,
 	"december":  12,
+}
+
+func LoadCalendar(data []byte) (Calendar, error) {
+	var tempCalendar map[string]map[string]string
+
+	err := json.Unmarshal(data, &tempCalendar)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return Calendar{}, err
+	}
+
+	return NewCalendar(tempCalendar)
 }
 
 func NewCalendar(data map[string]map[string]string) (Calendar, error) {
