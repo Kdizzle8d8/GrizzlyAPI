@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -24,4 +25,11 @@ func TestParse(t *testing.T) {
 	//0 means the number is in octal, and the 3 digits represent the permissions for the owner, group, and others
 	//1 is execute, 2 is write, and 4 is read, so 7 is read, write, and execute (1+2+4=7)
 	os.WriteFile("output.json", calendarJSON, 0777)
+}
+func TestNewCal(t *testing.T){
+	cal:=calendars.NewCalendar()
+	if cal.Months == nil {
+		assert.Failf(t, "Error creating calendar: %v", fmt.Sprintf("%v", cal.Months))
+	}
+	fmt.Println(cal.Months[0])
 }

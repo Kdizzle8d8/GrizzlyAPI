@@ -3,6 +3,7 @@ package calendars
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,8 +27,15 @@ type Calendar struct {
 
 // This method is defined on the Calendar struct, so it can be called on any Calendar object.
 func (c *Calendar) ToJSON() ([]byte, error) {
+
 	sort.Slice(c.Months, func(i, j int) bool {
-		return c.Months[i].Number < c.Months[j].Number
+		if c.Months[i].Number > 8 && c.Months[j].Number <= 8 {
+			return true
+		} else if c.Months[i].Number <= 8 && c.Months[j].Number > 8 {
+			return false
+		} else {
+			return c.Months[i].Number < c.Months[j].Number
+		}
 	})
 
 	for i := range c.Months {
@@ -66,10 +74,10 @@ func LoadCalendar(data []byte) (Calendar, error) {
 		return Calendar{}, err
 	}
 
-	return NewCalendar(tempCalendar)
+	return ParseCalendar(tempCalendar)
 }
 
-func NewCalendar(data map[string]map[string]string) (Calendar, error) {
+func ParseCalendar(data map[string]map[string]string) (Calendar, error) {
 	calendar := Calendar{}
 	for monthName, days := range data {
 		//Strings don't have methods by default without importing a package, so we need to use the strings package for split and tolower
@@ -96,4 +104,16 @@ func NewCalendar(data map[string]map[string]string) (Calendar, error) {
 	}
 
 	return calendar, nil
+}
+func NewCalendar() Calendar {
+	data,err:=os.ReadFile("output.json")
+	if err!=nil{
+		fmt.Print("Error:",err)
+	}
+	var calendar Calendar
+	err = json.Unmarshal(data, &calendar)
+	if err!=nil{
+		fmt.Print("Error:",err)
+	}
+	return calendar
 }
