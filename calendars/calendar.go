@@ -27,15 +27,18 @@ type Calendar struct {
 
 // This method is defined on the Calendar struct, so it can be called on any Calendar object.
 func (c *Calendar) ToJSON() ([]byte, error) {
-
 	sort.Slice(c.Months, func(i, j int) bool {
-		if c.Months[i].Number > 8 && c.Months[j].Number <= 8 {
-			return true
-		} else if c.Months[i].Number <= 8 && c.Months[j].Number > 8 {
-			return false
-		} else {
-			return c.Months[i].Number < c.Months[j].Number
+		// Extract year from month name
+		yearI, _ := strconv.Atoi(strings.Split(c.Months[i].Name, " ")[1])
+		yearJ, _ := strconv.Atoi(strings.Split(c.Months[j].Name, " ")[1])
+
+		// Compare years first
+		if yearI != yearJ {
+			return yearI < yearJ
 		}
+
+		// If years are the same, compare month numbers
+		return c.Months[i].Number < c.Months[j].Number
 	})
 
 	for i := range c.Months {
