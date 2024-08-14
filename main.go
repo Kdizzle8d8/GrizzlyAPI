@@ -2,15 +2,22 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/Kdizzle8d8/GrizzlyAPI/calendars"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("cannot load .env file", err)
+	}
+
 	e := echo.New()
 	e.GET("/", test)
 	e.GET("/date/:month/:day", func(c echo.Context) error {
